@@ -1,0 +1,17 @@
+{
+    "name": "roguelike",
+    "author": "Hydrothermal",
+    "version": "0.1.0",
+    "description": "something resembling a roguelike",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Hydrothermal/roguelike"
+    },
+    "dependencies": {
+        "keypress": "~0.2",
+        "colors": "~1.1"
+    },
+    "bugs": "https://github.com/Hydrothermal/issues",
+    "engine": "node ~0.10",
+    "license": "MIT"
+}
