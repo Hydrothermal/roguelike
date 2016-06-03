@@ -1,14 +1,20 @@
 var keypress = require("keypress"),
     colors = require("colors"),
     game = {
+        //Map settings
+        //77x21 with borders will fit a default Windows command prompt
         width: 100,
         height: 23,
-        wrap: true,
         bordered: true,
+        //When true, the player will appear on the opposite side of the map when moving off the edge
+        wrap: true,
+        //Color detail (0 = none; 1 = very little; 2 = full)
         color: 1,
         map: []
     },
     player = {
+        //Character to use for the player (\u263A is a smiley)
+        ch: "\u263A",
         xp: 0,
         stats: {
             str: randRange(4, 9),
@@ -36,6 +42,7 @@ function readInput() {
     keypress(process.stdin);
 
     process.stdin.on("keypress", function(ch, key) {
+        //Normally this function intercepts all input but we want to let ctrl+c go through
         if(key && key.ctrl && key.name === "c") {
             process.exit();
         }
@@ -115,14 +122,17 @@ function statusLine() {
 
 function drawMap() {
     var lines = [],
+        //Horizontal rule (a full-width line of dashes)
         hr = new Array(game.width + 1).join("-"),
         //corners = ["/", "\\"],
         corners = ["#", "#"],
         cell;
 
+    //Draw rows
     for(var y = 0; y < game.map.length; y++) {
         lines[y] = [];
         
+        //Left border
         if(game.bordered) {
             lines[y].push("|");
         }
@@ -149,13 +159,16 @@ function drawMap() {
             }
         }
 
+        //Join the row array into a string
         lines[y] = lines[y].join("");
 
+        //Right border
         if(game.bordered) {
             lines[y] += "|";
         }
     }
 
+    //Top and bottom borders
     if(game.bordered) {
         lines.unshift(corners[0] + hr + corners[1]);
         lines.push(corners[1] + hr + corners[0]);
@@ -164,6 +177,7 @@ function drawMap() {
     return lines.join("\n");
 }
 
+//Currently there's no reason not to call this with floor = false but it's there just in case
 function level(floor) {
     var level = 1 + (player.xp / 1000);
 
@@ -263,8 +277,7 @@ function spawnPlayer() {
         target = [randRange(0, game.width - 1), randRange(0, game.height - 1)];        
     }
 
-    player.ch = "\u2665".c(1, "red");
-    player.ch = "\u263A".c(1, "yellow");
+    player.ch = player.ch.c(1, "yellow");
     player.x = target[0];
     player.y = target[1];
 
@@ -305,10 +318,12 @@ function addxp(amount) {
     }
 }
 
+//x and y are relative to the player's current position
 function movePlayer(x, y) {
     var target = [player.x + x, player.y + y],
         cell;
 
+    //Wrapping logic
     if(game.wrap) {
         if(target[1] === game.height) {
             target[1] = 0;
@@ -330,12 +345,15 @@ function movePlayer(x, y) {
         player.y = target[1];
 
         if(cell.terrain === 1) {
+            //Forest
             addxp(30);
             heal(0.05);
         } else if(cell.terrain === 2) {
+            //Water
             addxp(30);
             damage(1);
         } else {
+            //Empty
             addxp(20);
             heal(0.1);
         }
