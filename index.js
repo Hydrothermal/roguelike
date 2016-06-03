@@ -306,6 +306,10 @@ function damage(amount) {
 
 function levelup() {
     player.maxhp = 6 + player.stats.con + (level(true) * player.stats.con);
+
+    for(var stat in player.stats) {
+        player.stats[stat] += randRange(0, 1);
+    }
 }
 
 function addxp(amount) {
