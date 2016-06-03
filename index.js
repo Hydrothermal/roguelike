@@ -342,16 +342,18 @@ function movePlayer(x, y) {
 
     cell = getCell(target[0], target[1]);
 
+    //When wrapping is off, prevent moving off the map
     if(cell) {
         clearPlayer();
 
         player.x = target[0];
         player.y = target[1];
+        
+        heal(0.05 + +(player.stats.con / 200).toFixed(2));
 
         if(cell.terrain === 1) {
             //Forest
             addxp(30);
-            heal(0.05);
         } else if(cell.terrain === 2) {
             //Water
             addxp(30);
@@ -359,7 +361,7 @@ function movePlayer(x, y) {
         } else {
             //Empty
             addxp(20);
-            heal(0.1);
+            heal(0.05);
         }
 
         setPlayer();
