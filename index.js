@@ -16,6 +16,7 @@ var keypress = require("keypress"),
         //Character to use for the player (\u263A is a smiley)
         ch: "\u263A",
         xp: 0,
+        gold: 0,
         stats: {
             str: randRange(4, 9),
             con: randRange(4, 9),
@@ -116,6 +117,8 @@ function statusLine() {
     status.push("INT: " + colorStat(player.stats.int));
     status.push("WIS: " + colorStat(player.stats.wis));
     status.push("CHA: " + colorStat(player.stats.cha));
+    status.push("  ");
+    status.push("Gold: " + player.gold);
 
     return status.join(" ");
 }
@@ -142,6 +145,8 @@ function drawMap() {
 
             if(cell.player) {
                 lines[y].push(player.ch);
+            } else if(cell.gold) {
+                lines[y].push("+".c(1, "yellow"));
             } else {
                 switch(cell.terrain) {
                     case 0:
@@ -257,6 +262,14 @@ function generateTerrain() {
     }
 }
 
+function generateGold() {
+    var gold = randRange(4, 18);
+
+    for(var i = 0; i < gold; i++) {
+        writeCell(randRange(0, game.width - 1), randRange(0, game.height - 1), { gold: randRange(6, 50) });
+    }
+}
+
 function generateMap() {
     for(var y = 0; y < game.height; y++) {
         game.map[y] = [];
@@ -269,6 +282,7 @@ function generateMap() {
     }
 
     generateTerrain();
+    generateGold();
 }
 
 function spawnPlayer() {
@@ -363,6 +377,11 @@ function movePlayer(x, y) {
             //Empty
             addxp(20);
             heal(0.05);
+        }
+
+        if(cell.gold) {
+            player.gold += cell.gold;
+            cell.gold = 0;
         }
 
         setPlayer();
