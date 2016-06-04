@@ -215,31 +215,32 @@ function writeCell(x, y, props) {
     return false;
 }
 
-function generateTerrainPatch(x, y, code) {
+function generateTerrainPatch(x, y, terrain) {
     var height = randRange(8, 16),
         width = 1,
         walker = [x, y];
 
-    game.map[y][x].terrain = code;
+    game.map[y][x].terrain = terrain;
 
-    function propagate() {
+    for(var i = 0; i < height; i++) {
         walker[1]++;
 
+        //When we're still generating above the vertical halfway point
         if(walker[1] - y < height / 2) {
+            //Move the generator to the left a bit and stretch it to the right
             walker[0] -= randRange(1, 3);
             width += randRange(1, 6);
         } else {
+            //After the halfway point, the width of each line starts shrinking
+            //This creates lopsided diamond shapes
             walker[0] += randRange(1, 3);
             width -= randRange(1, 6);
         }
 
-        for(var i = 0; i < width; i++) {
-            writeCell(walker[0] + i, walker[1], { terrain: code });
+        //Fill in this line with terrain
+        for(var u = 0; u < width; u++) {
+            writeCell(walker[0] + u, walker[1], { terrain: terrain });
         }
-    }
-
-    for(var i = 0; i < height; i++) {
-        propagate();
     }
 }
 
