@@ -1,19 +1,19 @@
 var keypress = require("keypress"),
     colors = require("colors"),
     game = {
-        //Map settings
-        //77x21 with borders will fit a default Windows command prompt
+        // Map settings
+        // 77x21 with borders will fit a default Windows command prompt
         width: 100,
         height: 23,
         bordered: true,
-        //When true, the player will appear on the opposite side of the map when moving off the edge
+        // When true, the player will appear on the opposite side of the map when moving off the edge
         wrap: true,
-        //Color detail (0 = none; 1 = very little; 2 = full)
+        // Color detail (0 = none; 1 = very little; 2 = full)
         color: 1,
         map: []
     },
     player = {
-        //Character to use for the player (\u263A is a smiley)
+        // Character to use for the player (\u263A is a smiley)
         ch: "\u263A",
         xp: 0,
         gold: 0,
@@ -43,7 +43,7 @@ function readInput() {
     keypress(process.stdin);
 
     process.stdin.on("keypress", function(ch, key) {
-        //Normally this function intercepts all input but we want to let ctrl+c go through
+        // Normally this function intercepts all input but we want to let ctrl+c go through
         if(key && key.ctrl && key.name === "c") {
             process.exit();
         }
@@ -125,17 +125,17 @@ function statusLine() {
 
 function drawMap() {
     var lines = [],
-        //Horizontal rule (a full-width line of dashes)
+        // Horizontal rule (a full-width line of dashes)
         hr = new Array(game.width + 1).join("-"),
         //corners = ["/", "\\"],
         corners = ["#", "#"],
         cell;
 
-    //Draw rows
+    // Draw rows
     for(var y = 0; y < game.map.length; y++) {
         lines[y] = [];
         
-        //Left border
+        // Left border
         if(game.bordered) {
             lines[y].push("|");
         }
@@ -164,16 +164,16 @@ function drawMap() {
             }
         }
 
-        //Join the row array into a string
+        // Join the row array into a string
         lines[y] = lines[y].join("");
 
-        //Right border
+        // Right border
         if(game.bordered) {
             lines[y] += "|";
         }
     }
 
-    //Top and bottom borders
+    // Top and bottom borders
     if(game.bordered) {
         lines.unshift(corners[0] + hr + corners[1]);
         lines.push(corners[1] + hr + corners[0]);
@@ -182,7 +182,7 @@ function drawMap() {
     return lines.join("\n");
 }
 
-//Currently there's no reason not to call this with floor = false but it's there just in case
+// Currently there's no reason not to call this with floor = false but it's there just in case
 function level(floor) {
     var level = 1 + (player.xp / 1000);
 
@@ -230,19 +230,19 @@ function generateTerrainPatch(x, y, terrain) {
     for(var i = 0; i < height; i++) {
         walker[1]++;
 
-        //When we're still generating above the vertical halfway point
+        // When we're still generating above the vertical halfway point
         if(walker[1] - y < height / 2) {
             //Move the generator to the left a bit and stretch it to the right
             walker[0] -= randRange(1, 3);
             width += randRange(1, 6);
         } else {
-            //After the halfway point, the width of each line starts shrinking
-            //This creates lopsided diamond shapes
+            // After the halfway point, the width of each line starts shrinking
+            // This creates lopsided diamond shapes
             walker[0] += randRange(1, 3);
             width -= randRange(1, 6);
         }
 
-        //Fill in this line with terrain
+        // Fill in this line with terrain
         for(var u = 0; u < width; u++) {
             writeCell(walker[0] + u, walker[1], { terrain: terrain });
         }
@@ -337,12 +337,12 @@ function addxp(amount) {
     }
 }
 
-//x and y are relative to the player's current position
+// x and y are relative to the player's current position
 function movePlayer(x, y) {
     var target = [player.x + x, player.y + y],
         cell;
 
-    //Wrapping logic
+    // Wrapping logic
     if(game.wrap) {
         if(target[1] === game.height) {
             target[1] = 0;
@@ -357,7 +357,7 @@ function movePlayer(x, y) {
 
     cell = getCell(target[0], target[1]);
 
-    //When wrapping is off, prevent moving off the map
+    // When wrapping is off, prevent moving off the map
     if(cell) {
         clearPlayer();
 
@@ -367,14 +367,14 @@ function movePlayer(x, y) {
         heal(0.05 + +(player.stats.con / 200).toFixed(2));
 
         if(cell.terrain === 1) {
-            //Forest
+            // Forest
             addxp(30);
         } else if(cell.terrain === 2) {
-            //Water
+            // Water
             addxp(30);
             damage(1);
         } else {
-            //Empty
+            // Empty
             addxp(20);
             heal(0.05);
         }
